@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple E-commerce App</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #3498db;
+    color: #fff;
+    text-align: center;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #2980b9;
+}
+
+.product {
+    margin-bottom: 20px;
+}
+
+.product img {
+    max-width: 20%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.product-price {
+    font-weight: bold;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* Cart table */
+#cart-items {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+/* Table header */
+#cart-items thead {
+    background-color: #f2f2f2;
+}
+
+/* Table header cells */
+#cart-items th {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Table rows */
+#cart-items td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Table row hover effect */
+#cart-items tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Total row */
+#cart-total {
+    margin-top: 10px;
+    font-weight: bold;
+}
+</style>
+</head>
+<body>
+<div class="container" id="login-container">
+    <h1>Login</h1>
+    <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" placeholder="Enter username">
+    </div>
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" placeholder="Enter password">
+    </div>
+    <button class="btn" onclick="login()">Login</button>
+</div>
+
+<div class="container" id="web-page" style="display: none;">
+    <h1>Welcome to the E-commerce App</h1>
+    <div class="form-group">
+        <label for="currency">Select Currency:</label>
+        <select id="currency" onchange="updatePrices()">
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="PKR">PKR</option>
+            <option value="CAD">CAD</option>
+        </select>
+    </div>
+    <div class="product">
+        <img src="https://5.imimg.com/data5/SELLER/Default/2021/7/PC/WO/VB/85437332/samsung-monitor--500x500.jpg" alt="Product A">
+        <label for="product">LED:</label>
+        <span class="product-price" id="productA">($10)</span>
+        <button class="btn" onclick="addToCart('LED', 10)">Add to Cart</button>
+    </div>
+    <div class="product">
+        <img src="https://emixstore.com/wp-content/uploads/2023/03/9sadhjsad9ZD7s89dasdhsaudhysadsad78sadsa-3.jpg" alt="Product B">
+        <label for="product">Airpods Green:</label>
+        <span class="product-price" id="productB">($20)</span>
+        <button class="btn" onclick="addToCart('Airpods Green', 20)">Add to Cart</button>
+    </div>
+    <div class="product">
+        <img src="https://fonepro.pk/wp-content/uploads/2022/06/Realme-Buds-Air-3-Starry-Blue-1-150x150.png" alt="Product C">
+        <label for="product">Airpods Blue:</label>
+        <span class="product-price" id="productC">($30)</span>
+        <button class="btn" onclick="addToCart('Airpods Blue', 30)">Add to Cart</button>
+    </div>
+    <div id="cart">
+        <h2>Your Cart (<span id="cart-count">0</span> items)</h2>
+        <table id="cart-items">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <div id="cart-total"></div>
+    </div>
+</div>
+
+<script>
+const cart = [];
+
+function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    // Sample username and password for demo purposes
+    if (username === 'user' && password === 'password') {
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('web-page').style.display = 'block';
+    } else {
+        alert('Invalid username or password. Please try again.');
+    }
+}
+
+function addToCart(product, price) {
+    let existingItem = cart.find(item => item.product === product);
+    if (existingItem) {
+        existingItem.quantity++;
+    } else {
+        cart.push({ product, price, quantity: 1 });
+    }
+    updateCart(); // Call updateCart after adding item to the cart
+}
+
+function decreaseQuantity(product) {
+    let existingItem = cart.find(item => item.product === product);
+    if (existingItem && existingItem.quantity > 1) {
+        existingItem.quantity--;
+        updateCart();
+    }
+}
+
+function increaseQuantity(product) {
+    let existingItem = cart.find(item => item.product === product);
+    if (existingItem) {
+        existingItem.quantity++;
+        updateCart();
+    }
+}
+
+function updateCart() {
+    const cartItemsElement = document.getElementById('cart-items').getElementsByTagName('tbody')[0];
+    cartItemsElement.innerHTML = '';
+    cart.forEach(item => {
+        const row = cartItemsElement.insertRow();
+        row.innerHTML = `
+            <td>${item.product}</td>
+            <td>${getCurrencySymbol()}${(item.price * getCurrencyRate()).toFixed(2)}</td>
+            <td>
+                <button onclick="decreaseQuantity('${item.product}')">-</button>
+                <span>${item.quantity}</span>
+                <button onclick="increaseQuantity('${item.product}')">+</button>
+            </td>
+            <td>${getCurrencySymbol()}${(item.price * item.quantity * getCurrencyRate()).toFixed(2)}</td>
+        `;
+    });
+    updateCartTotal();
+}
+
+function getCurrencySymbol() {
+    const currency = document.getElementById('currency').value;
+    switch (currency) {
+        case 'USD':
+            return '$';
+        case 'EUR':
+            return '€';
+        case 'GBP':
+            return '£';
+        case 'PKR':
+            return '₨';
+        case 'CAD':
+            return 'CA$';
+        default:
+            return '$';
+    }
+}
+
+function getCurrencyRate() {
+    const currency = document.getElementById('currency').value;
+    switch (currency) {
+        case 'USD':
+            return 1;
+        case 'EUR':
+            return 0.85;
+        case 'GBP':
+            return 0.73;
+        case 'PKR':
+            return 175.50;
+        case 'CAD':
+            return 1.28;
+        default:
+            return 1;
+    }
+}
+
+function updatePrices() {
+    const currency = document.getElementById('currency').value;
+    fetch(`https://data.fixer.io/api/latest?access_key=43ca5faebc7d179a5d05fc6969b3f340&symbols=${currency}`)
+        .then(response => response.json())
+        .then(data => {
+            const rate = data.rates[currency];
+            document.getElementById('productA').textContent = `(${getCurrencySymbol()}${(10 * rate).toFixed(2)})`;
+            document.getElementById('productB').textContent = `(${getCurrencySymbol()}${(20 * rate).toFixed(2)})`;
+            document.getElementById('productC').textContent = `(${getCurrencySymbol()}${(30 * rate).toFixed(2)})`;
+            updateCart();
+        })
+        .catch(error => {
+            console.error('Error fetching exchange rate:', error);
+            document.getElementById('productA').textContent = 'Error calculating price';
+            document.getElementById('productB').textContent = 'Error calculating price';
+            document.getElementById('productC').textContent = 'Error calculating price';
+        });
+}
+
+function updateCartTotal() {
+    const cartCountElement = document.getElementById('cart-count');
+    cartCountElement.textContent = cart.reduce((total, item) => total + item.quantity, 0);
+
+    const currency = document.getElementById('currency').value;
+    fetch(`https://data.fixer.io/api/latest?access_key=43ca5faebc7d179a5d05fc6969b3f340&symbols=${currency}`)
+        .then(response => response.json())
+        .then(data => {
+            const rate = data.rates[currency];
+            let total = 0;
+            cart.forEach(item => {
+                total += item.price * item.quantity * rate;
+            });
+            document.getElementById('cart-total').textContent = `Total: ${getCurrencySymbol()}${total.toFixed(2)}`;
+        })
+        .catch(error => {
+            console.error('Error fetching exchange rate:', error);
+            document.getElementById('cart-total').textContent = 'Error calculating total';
+        });
+}
+
+updatePrices(); // Update prices initially
+</script>
+</body>
+</html>
