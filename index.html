@@ -279,7 +279,7 @@ function getCurrencyRate() {
 
 function updatePrices() {
     const currency = document.getElementById('currency').value;
-    fetch(`https://data.fixer.io/api/latest?access_key=43ca5faebc7d179a5d05fc6969b3f340&symbols=${currency}`)
+    fetch(`https://data.fixer.io/api/latest?access_key=Add_Your_API_Key_Here&symbols=${currency}`)
         .then(response => response.json())
         .then(data => {
             const rate = data.rates[currency];
@@ -301,7 +301,7 @@ function updateCartTotal() {
     cartCountElement.textContent = cart.reduce((total, item) => total + item.quantity, 0);
 
     const currency = document.getElementById('currency').value;
-    fetch(`https://data.fixer.io/api/latest?access_key=43ca5faebc7d179a5d05fc6969b3f340&symbols=${currency}`)
+    fetch(`https://data.fixer.io/api/latest?access_key=Add_Your_API_Key_Here&symbols=${currency}`)
         .then(response => response.json())
         .then(data => {
             const rate = data.rates[currency];
